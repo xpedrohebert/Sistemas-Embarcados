@@ -9,9 +9,6 @@
 #include "esp_system.h"
 #include "esp_idf_version.h"
 
-
-
-
 void app_main(void)
 {
 esp_chip_info_t chip_info;
