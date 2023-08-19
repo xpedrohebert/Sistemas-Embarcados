@@ -11,6 +11,9 @@
 #include "freertos/task.h"
 #include "esp_chip_info.h"
 #include "esp_flash.h"
+#include "esp_log.h"
+#include "esp_system.h"
+#include "esp_idf_version.h"
 
 void app_main(void)
 {
@@ -21,7 +24,7 @@ esp_chip_info(&chip_info);
 static const char* TAG = "MyModule";
 
 
-ESP_LOGI(TAG,"This is %s chip with %d CPU core(s), WiFi%s%s%s, idf version:%s, ",
+ESP_LOGI(TAG,"This is %s chip with %d CPU core(s), WiFi%s%s%s, idf version : %s, ",
            CONFIG_IDF_TARGET,
            chip_info.cores,
            (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
