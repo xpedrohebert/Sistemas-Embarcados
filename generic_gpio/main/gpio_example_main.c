@@ -71,6 +71,7 @@ static void gpio_task_example(void* arg)
     for(;;) {
         if(xQueueReceive(gpio_evt_queue, &io_num, portMAX_DELAY)) {
             printf("GPIO[%"PRIu32"] intr, val: %d\n", io_num, gpio_get_level(io_num));
+        gpio_set_level(GPIO_OUTPUT_IO_0, 0);
         }
     }
 }
@@ -103,9 +104,9 @@ void app_main(void)
     gpio_config(&io_conf);
 
     //change gpio interrupt type for one pin
-    gpio_set_intr_type(GPIO_INPUT_IO_0, GPIO_INTR_ANYEDGE);
+    gpio_set_intr_type(GPIO_INPUT_IO_0, GPIO_INTR_POSEDGE);
     //change gpio interrupt type for one pin
-    gpio_set_intr_type(GPIO_INPUT_IO_1, GPIO_INTR_ANYEDGE);
+    gpio_set_intr_type(GPIO_INPUT_IO_1, GPIO_INTR_NEGEDGE);
     //change gpio interrupt type for one pin
     gpio_set_intr_type(GPIO_INPUT_IO_2, GPIO_INTR_ANYEDGE);
 
@@ -132,10 +133,10 @@ void app_main(void)
 
     int cnt = 0;
     while(1) {
-        printf("cnt: %d\n", cnt++);
-        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        //printf("cnt: %d\n", cnt++);
+        vTaskDelay(2000 / portTICK_PERIOD_MS);
         gpio_set_level(GPIO_OUTPUT_IO_0, 1);
-        vTaskDelay(10000 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_OUTPUT_IO_0, 0);
+       // vTaskDelay(10000 / portTICK_PERIOD_MS);
+       // gpio_set_level(GPIO_OUTPUT_IO_0, 0);
     }
 }
