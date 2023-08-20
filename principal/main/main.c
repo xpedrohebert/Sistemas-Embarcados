@@ -14,15 +14,14 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_idf_version.h"
+#include "driver/gpio.h"
 
 void app_main(void)
 {
 esp_chip_info_t chip_info;
-//uint32_t flash_size;
 esp_chip_info(&chip_info);
 
 static const char* TAG = "MyModule";
-
 
 ESP_LOGI(TAG,"This is %s chip with %d CPU core(s), WiFi%s%s%s, idf version : %s, ",
            CONFIG_IDF_TARGET,

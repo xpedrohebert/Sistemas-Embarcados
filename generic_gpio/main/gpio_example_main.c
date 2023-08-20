@@ -35,9 +35,8 @@
  *
  */
 
-#define GPIO_OUTPUT_IO_0    CONFIG_GPIO_OUTPUT_0
-#define GPIO_OUTPUT_IO_1    CONFIG_GPIO_OUTPUT_1
-#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_0) | (1ULL<<GPIO_OUTPUT_IO_1))
+#define GPIO_OUTPUT_IO_0    GPIO_NUM_2
+#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<GPIO_OUTPUT_IO_0) | (1ULL<<GPIO_OUTPUT_IO_0))
 /*
  * Let's say, GPIO_OUTPUT_IO_0=18, GPIO_OUTPUT_IO_1=19
  * In binary representation,
@@ -45,9 +44,10 @@
  * 1ULL<<GPIO_OUTPUT_IO_1 is equal to 0000000000000000000010000000000000000000
  * GPIO_OUTPUT_PIN_SEL                0000000000000000000011000000000000000000
  * */
-#define GPIO_INPUT_IO_0     CONFIG_GPIO_INPUT_0
-#define GPIO_INPUT_IO_1     CONFIG_GPIO_INPUT_1
-#define GPIO_INPUT_PIN_SEL  ((1ULL<<GPIO_INPUT_IO_0) | (1ULL<<GPIO_INPUT_IO_1))
+#define GPIO_INPUT_IO_0     GPIO_NUM_0
+#define GPIO_INPUT_IO_1     GPIO_NUM_4
+#define GPIO_INPUT_IO_2     GPIO_NUM_5
+#define GPIO_INPUT_PIN_SEL  ((1ULL<<GPIO_INPUT_IO_0) | (1ULL<<GPIO_INPUT_IO_1)| (1ULL<<GPIO_INPUT_IO_2))
 /*
  * Let's say, GPIO_INPUT_IO_0=4, GPIO_INPUT_IO_1=5
  * In binary representation,
@@ -104,6 +104,10 @@ void app_main(void)
 
     //change gpio interrupt type for one pin
     gpio_set_intr_type(GPIO_INPUT_IO_0, GPIO_INTR_ANYEDGE);
+    //change gpio interrupt type for one pin
+    gpio_set_intr_type(GPIO_INPUT_IO_1, GPIO_INTR_ANYEDGE);
+    //change gpio interrupt type for one pin
+    gpio_set_intr_type(GPIO_INPUT_IO_2, GPIO_INTR_ANYEDGE);
 
     //create a queue to handle gpio event from isr
     gpio_evt_queue = xQueueCreate(10, sizeof(uint32_t));
@@ -116,6 +120,8 @@ void app_main(void)
     gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (void*) GPIO_INPUT_IO_0);
     //hook isr handler for specific gpio pin
     gpio_isr_handler_add(GPIO_INPUT_IO_1, gpio_isr_handler, (void*) GPIO_INPUT_IO_1);
+    //hook isr handler for specific gpio pin
+    gpio_isr_handler_add(GPIO_INPUT_IO_2, gpio_isr_handler, (void*) GPIO_INPUT_IO_2);
 
     //remove isr handler for gpio number.
     gpio_isr_handler_remove(GPIO_INPUT_IO_0);
@@ -128,7 +134,8 @@ void app_main(void)
     while(1) {
         printf("cnt: %d\n", cnt++);
         vTaskDelay(10000 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_OUTPUT_IO_0, cnt % 2);
-        gpio_set_level(GPIO_OUTPUT_IO_1, cnt % 2);
+        gpio_set_level(GPIO_OUTPUT_IO_0, 1);
+        vTaskDelay(10000 / portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_OUTPUT_IO_0, 0);
     }
 }
