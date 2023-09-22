@@ -107,7 +107,7 @@ void app_main(void)
     gpio_set_intr_type(GPIO_INPUT_IO_0, GPIO_INTR_POSEDGE);
     //change gpio interrupt type for one pin
     gpio_set_intr_type(GPIO_INPUT_IO_1, GPIO_INTR_NEGEDGE);
-    //change gpio interrupt type for one pin
+    //change gpio interrupt type for one pin8
     gpio_set_intr_type(GPIO_INPUT_IO_2, GPIO_INTR_ANYEDGE);
 
     //create a queue to handle gpio event from isr
