@@ -1,35 +1,31 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- |
+# Projeto Final - Medição de ângulo - MCPWM - Dezembro/23
+# Disciplina: Sistemas Embarcados - CEFET/MG
+# Professor: Túlio Charles de Oliveira Carvalho
+# Alunos: Bernardo Neves Lima, Matheus Lima Moreira Martins e Pedro Hebert Moura dos Santos
 
-# _Sample project_
+Este projeto foi desenvolvido como trabalho final da disciplina de Sistemas Embarcados do curso de Engenharia Elétrica do CEFET-MG. O principal objetivo foi aplicar os conhecimentos absorvidos durante o semestre utilizando os principais periféricos do microcontrolador Espressif ESP32, através de sua placa de desenvolvimento. Durante o curso foram implementados diversas funcionalidades através da linguagem C com o módulo ESP32, como os conceitos de tasks, semaphoros, interrupções, timers, display, protocolos de comunicação e transmissão de dados via wifi. Neste trabalho foi escolhido a utilização do módulo de captura MCPWM para auxiliar na detecção de dois sinais para medição de ângulo de giro de um disco dentado, além de associar este ângulo a uma energia absorvida, apresentar os resultados em um display OLED e sincronizar os dados com o MQTT via wifi. 
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+## Índice
+- [Instruções de Instalação](#instruções-de-instalação)
+- [Como Usar](#como-usar)
+- [Configuração](#configuração)
+- [Contribuição](#contribuição)
+- [Licença](#licença)
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+## Instruções de Instalação
+
+Para instalação do programa é necessário que seja baixado o arquivo "projeto_final.rar" e, após descompactá-lo, alocar os arquivos na raiz do diretório definido juntamente com o compilador de sua escolha, de preferência o VScode. Em seguida, é preciso que sejam realizadas as conexões elétricas no módulo ESP32 com as entradas e saídas definidas pelo código. Por fim, se torna possível realizar a compilação do código (Build, Flash and Monitor).
+
+## Como Usar
+
+Para a realização dos testes foi utilizado um disco dentado construído em impressora 3D, este gira em torno de seu próprio eixo, fazendo com que os dentes de sua extremidade sejam detectados por dois sensores de barreira dispostos a 180°. Com a utilização do módulo de captura do ESP32, as variações dos sinais do sensores são identificadas como interrupções, sendo consideradas as bordas de subida e descida dos mesmos. A cada interrupção, é adicionado 7,5° ao valor de ângulo total a ser medido, de forma incremental têm-se o valor final de ângulo. É realizado um ajuste fino deste ângulo final, adicionando um cálculo de tempo ao para definição do ângulo, de modo que a partir da diferença do tempo entre duas interrupções (borda de subida e descida) de um mesmo sensor, é calculado o ângulo que o disco girou, isto para ângulos menores que 7,5°. Este ângulo é recebido por uma função que realiza um cálculo de Energia Absorvida, variável esta que será utilizada em projetos futuros, ao final do cálculo, os valores de ângulo medido e energia são mostrados no display e enviados via MQTT para um dispositivo móvel.
+
+## Configuração
+
+Adicionar aqui os pinos de entradas, saídas e o que ligar em que.
+
+## Contribuição
+
+Os alunos Bernardo, Matheus e Pedro, desenvolveram o código de maneira colaborativa utilizando a estrutura da instituição de ensino CEFET e, sob supervisão do Professor Túlio.
 
 
-
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
-
-## Example folder contents
-
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.
