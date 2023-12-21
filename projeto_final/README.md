@@ -5,7 +5,7 @@
 
 (Ler o arquivo README.md no diretório 'sample project' para mais informações sobre o trabalho.)
 
-Este trabaho foi desenvolvido com a idéia de medir a energia abservida em um ensaio Charpy Através do angulo final do sistema. Para tal foi usado dois sensores encoder disponíveis no link: https://produto.mercadolivre.com.br/MLB-3699805434-sensor-de-velocidade-fotoeletrico-com-encoder-arduino-pic-_JM#position=44&search_layout=stack&type=item&tracking_id=7f39a904-02c7-4bb5-9778-c331f98c39b8. Os sensores geram pulsos defasados um do outro que sao usados para contar a quantidade de interrupções no sensor óptico e assim calcular o angulo. 
+Este trabaLho foi desenvolvido com a ideia de medir a energia abservida em um ensaio Charpy Através do angulo final do sistema. Para tal foi usado dois sensores encoder disponíveis no link: https://produto.mercadolivre.com.br/MLB-3699805434-sensor-de-velocidade-fotoeletrico-com-encoder-arduino-pic-_JM#position=44&search_layout=stack&type=item&tracking_id=7f39a904-02c7-4bb5-9778-c331f98c39b8. Os sensores geram pulsos defasados um do outro que sao usados para contar a quantidade de interrupções no sensor óptico e assim calcular o angulo. 
 
 Para esse sistema um pendulo é soltado de um angulo X e deveria ir até um angulo -X porem chega somente em -Y por conta da energia absorvida no ensaio. Os pulsos e bordas são gerados pelo giro do péndulo de forma que o sinal gerado na saída dos sensores será dada da seguinte forma:
 
