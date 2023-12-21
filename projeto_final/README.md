@@ -1,31 +1,75 @@
-# Projeto Final - Medição de ângulo - MCPWM - Dezembro/23
-# Disciplina: Sistemas Embarcados - CEFET/MG
-# Professor: Túlio Charles de Oliveira Carvalho
-# Alunos: Bernardo Neves Lima, Matheus Lima Moreira Martins e Pedro Hebert Moura dos Santos
+| Dispositivos suportados | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-S2 | ESP32-S3 |
+| ----------------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- |
 
-Este projeto foi desenvolvido como trabalho final da disciplina de Sistemas Embarcados do curso de Engenharia Elétrica do CEFET-MG. O principal objetivo foi aplicar os conhecimentos absorvidos durante o semestre utilizando os principais periféricos do microcontrolador Espressif ESP32, através de sua placa de desenvolvimento. Durante o curso foram implementados diversas funcionalidades através da linguagem C com o módulo ESP32, como os conceitos de tasks, semaphoros, interrupções, timers, display, protocolos de comunicação e transmissão de dados via wifi. Neste trabalho foi escolhido a utilização do módulo de captura MCPWM para auxiliar na detecção de dois sinais para medição de ângulo de giro de um disco dentado, além de associar este ângulo a uma energia absorvida, apresentar os resultados em um display OLED e sincronizar os dados com o MQTT via wifi. 
+# Trabalho Final: Medidor de Energia absorvida baseado no exemplo "HC-SR04 Example based on MCPWM Capture" e nas práticas realizadas em turma
 
-## Índice
-- [Instruções de Instalação](#instruções-de-instalação)
-- [Como Usar](#como-usar)
-- [Configuração](#configuração)
-- [Contribuição](#contribuição)
-- [Licença](#licença)
+(Ler o arquivo README.md no diretório 'sample project' para mais informações sobre o trabalho.)
 
-## Instruções de Instalação
+Este trabaho foi desenvolvido com a idéia de medir a energia abservida em um ensaio Charpy Através do angulo final do sistema. Para tal foi usado dois sensores encoder disponíveis no link: https://produto.mercadolivre.com.br/MLB-3699805434-sensor-de-velocidade-fotoeletrico-com-encoder-arduino-pic-_JM#position=44&search_layout=stack&type=item&tracking_id=7f39a904-02c7-4bb5-9778-c331f98c39b8. Os sensores geram pulsos defasados um do outro que sao usados para contar a quantidade de interrupções no sensor óptico e assim calcular o angulo. 
 
-Para instalação do programa é necessário que seja baixado o arquivo "projeto_final.rar" e, após descompactá-lo, alocar os arquivos na raiz do diretório definido juntamente com o compilador de sua escolha, de preferência o VScode. Em seguida, é preciso que sejam realizadas as conexões elétricas no módulo ESP32 com as entradas e saídas definidas pelo código. Por fim, se torna possível realizar a compilação do código (Build, Flash and Monitor).
+Para esse sistema um pendulo é soltado de um angulo X e deveria ir até um angulo -X porem chega somente em -Y por conta da energia absorvida no ensaio. Os pulsos e bordas são gerados pelo giro do péndulo de forma que o sinal gerado na saída dos sensores será dada da seguinte forma:
 
-## Como Usar
+Sinal Típico:
 
-Para a realização dos testes foi utilizado um disco dentado construído em impressora 3D, este gira em torno de seu próprio eixo, fazendo com que os dentes de sua extremidade sejam detectados por dois sensores de barreira dispostos a 180°. Com a utilização do módulo de captura do ESP32, as variações dos sinais do sensores são identificadas como interrupções, sendo consideradas as bordas de subida e descida dos mesmos. A cada interrupção, é adicionado 7,5° ao valor de ângulo total a ser medido, de forma incremental têm-se o valor final de ângulo. É realizado um ajuste fino deste ângulo final, adicionando um cálculo de tempo ao para definição do ângulo, de modo que a partir da diferença do tempo entre duas interrupções (borda de subida e descida) de um mesmo sensor, é calculado o ângulo que o disco girou, isto para ângulos menores que 7,5°. Este ângulo é recebido por uma função que realiza um cálculo de Energia Absorvida, variável esta que será utilizada em projetos futuros, ao final do cálculo, os valores de ângulo medido e energia são mostrados no display e enviados via MQTT para um dispositivo móvel.
+```
 
-## Configuração
+Sensor 1    +-----+     +-----+     +---+
+            |     |     |     |     |   |
+            |     |     |     |     |   |
+         ---+     +-----+     +-----+   +----
 
-Adicionar aqui os pinos de entradas, saídas e o que ligar em que.
+Sensor 2       +-----+     +-----+
+               |     |     |     |
+               |     |     |     |
+         ------+     +-----+     +-----------
 
-## Contribuição
+ +------------------------------------------->
+                    Timeline
+```
 
-Os alunos Bernardo, Matheus e Pedro, desenvolveram o código de maneira colaborativa utilizando a estrutura da instituição de ensino CEFET e, sob supervisão do Professor Túlio.
+Através da ocorrencia de duas interrupções em um sensor é identificado a inversão do sistema e a contágem para. Com o módulo de captura pegamos o tempo do ultimo pusso que usamos para refinar a medida de angulo. O sinal do sensor deve ser ligado a um sensor amplificador de ganho 2 já que sua saída é de 1.5V e precisa ser aplificado para 3V.
+
+Para liberar a contágem e para habilitar outra medição/ensaio um botão deve ser precionado para que a contágem zere e para que o valor a contágem seja habilitada.
+
+## Como usar o medidor
+
+### Requisição de Hardware 
+
+* Uma placa de desenvolvimento ESP que possua o periférico MCPWM
+* Sensor encoder https://produto.mercadolivre.com.br/MLB-3699805434-sensor-de-velocidade-fotoeletrico-com-encoder-arduino-pic-_JM#position=44&search_layout=stack&type=item&tracking_id=7f39a904-02c7-4bb5-9778-c331f98c39b8
+
+Conexão do sistema:
+
+```
+           Sensores            Adequação de sinal                           ESP-32
+        +-------------+          +------------+           +----------------------------------------+
++-------+             |          |            |           |                                        |
+|       |     VCC     +----------+     5V     +-----------+                   5V                   |
++-------+             |          |            |           |                                        |
+        + Sensor 1 S1 +--=====>--+ AmpOp Av 2 +--======>--+ GPIO26 (Resistor de pull down Externo) |
+        |             |          |            |           |                                        |
+        + Sensor 2 S1 +--=====>--+ AmpOp Av 2 +--======>--+ GPIO27 (Resistor de pull down Externo) |
++-------|             |          |            |           |                                        |
+|       |     GND     +----------+     GND    +-----------+                  GND                   |
++-------|             |          |            |           |                                        |
+        +-------------+          +------------+     +-----+ GPIO25 (Resistor de pull down Externo) |
+                                                    |     |                                        |
++-------+ Push button +--=====================>-----+     +----------------------------------------+
+
+```
 
 
+### Build and Flash
+
+Dê um build e flash o programa no ESP32, então visualize os resultados na saída do terminal serial
+
+(Para sair do terminal serial, apertar "Ctrl + ]".)
+
+## Teste:
+ 1. Conectar saída 1 do sensor 1 ao amplificador de ganho 2 e a saída do amplificador à porta 26 e conectar saída 1 do sensor 2 à outro amplificador de ganho 2 e a saída do mesmo à porta 27.
+ 2. Utilizar um push buton e pegar a saída conectada ao GND e ligar a porta 25
+ 3. Girar o disco detector em um sentido e depois no outro para verificar a saída do sistema
+
+## Problemas dúvidas e sujestões
+
+Para quaisquer dificuldade técnicas abra um [issue](https://github.com/xpedrohebert/sistemas-embarcados/issues) no GitHub. Responderemos assim que possível.
